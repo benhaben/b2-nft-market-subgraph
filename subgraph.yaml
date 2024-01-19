@@ -2,7 +2,7 @@ specVersion: 0.0.4
 description: NFT market for ERC721 tokens on B2
 repository:  https://github.com/benhaben
 schema:
-  file: ./schema.graphql
+  file: ./schema.graphqls
 dataSources:
   - kind: ethereum/contract
     name: B2NFTMarketplace
@@ -10,7 +10,7 @@ dataSources:
     source:
       address: "0x166A7695F71420ed492D1A8C21D45F7Af8881153"
       abi: B2NFTMarketplace
-      startBlock: 83000
+      startBlock: 81984
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -44,7 +44,7 @@ dataSources:
     source:
       address: "0xFCB0CC17B1fC3f15c7F7464F69A8CbC2D36cB3aa"
       abi: B2CollectionFactory
-      startBlock: 83000
+      startBlock: 81984
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -59,6 +59,10 @@ dataSources:
       abis:
         - name: B2CollectionFactory
           file: ./abi/ugly/B2CollectionFactory.json
+        - name: IERC721
+          file: ./abi/ugly/IERC721.json
+        - name: IERC721Metadata
+          file: ./abi/ugly/IERC721Metadata.json
       eventHandlers:
         - event: CreatedNFTCollection(address,address,address,uint256)
           handler: handleCollectionNew

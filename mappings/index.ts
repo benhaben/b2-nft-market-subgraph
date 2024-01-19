@@ -5,10 +5,10 @@ import {AskOrder, Collection, NFT, Transaction, User} from "../generated/schema"
 import {fetchName, fetchSymbol, fetchTokenURI} from "./utils/erc721";
 import {toBigDecimal} from "./utils";
 import {
-    CloseNFTCollection,
-    CreatedNFTCollection,
+    CreatedNFTCollection, ModifyNFTCollection,
     ModifyRoyaltyFee
 } from "../generated/B2CollectionFactory/B2CollectionFactory";
+import {updateCollectionDayData, updateMarketPlaceDayData} from "./utils/dayUpdates";
 
 
 // Constants
@@ -24,6 +24,7 @@ export function handleCollectionNew(event: CreatedNFTCollection): void {
     if (collection === null) {
         collection = new Collection(event.params.nft.toHex());
         collection.name = fetchName(event.params.nft);
+        collection.operator = event.params.operator;
         collection.symbol = fetchSymbol(event.params.nft);
         collection.active = true;
         collection.totalTrades = ZERO_BI;
@@ -39,7 +40,8 @@ export function handleCollectionNew(event: CreatedNFTCollection): void {
     collection.royaltyFees = toBigDecimal(event.params.royaltyFees, 2);
     collection.save();
 }
-export function handleModifyCollection(event: CloseNFTCollection): void {
+
+export function handleModifyCollection(event: ModifyNFTCollection): void {
     let collection = Collection.load(event.params.nft.toHex());
     if (collection !== null) {
         collection.active = collection.active;
@@ -56,6 +58,7 @@ export function handleModifyRoyaltyFee(event: ModifyRoyaltyFee): void {
         collection.save();
     }
 }
+
 export function handleListedNFT(event: ListedNFT): void {
     let user = User.load(event.params.seller.toHex());
     if (user === null) {
@@ -63,10 +66,10 @@ export function handleListedNFT(event: ListedNFT): void {
         user.numberTokensListed = ONE_BI;
         user.numberTokensPurchased = ZERO_BI;
         user.numberTokensSold = ZERO_BI;
-        user.totalVolumeInBNBTokensPurchased = ZERO_BD;
-        user.totalVolumeInBNBTokensSold = ZERO_BD;
-        user.totalFeesCollectedInBNB = ZERO_BD;
-        user.averageTokenPriceInBNBPurchased = ZERO_BD;
+        user.totalVolumeInBTCTokensPurchased = ZERO_BD;
+        user.totalVolumeInBTCTokensSold = ZERO_BD;
+        user.totalFeesCollectedInBTC = ZERO_BD;
+        user.averageTokenPriceInBTCPurchased = ZERO_BD;
         user.averageTokenPriceInBNBSold = ZERO_BD;
         user.save();
     }
@@ -191,13 +194,17 @@ export function handleBoughtNFT(event: BoughtNFT): void {
             buyer.numberTokensPurchased.toBigDecimal()
         );
     }
+    buyer.save();
 
     // 2. Seller
     let seller = User.load(event.params.seller.toHex());
-    seller.numberTokensSold = seller.numberTokensSold.plus(ONE_BI);
-    seller.numberTokensListed = seller.numberTokensListed.minus(ONE_BI);
-    seller.totalVolumeInBTCTokensSold = seller.totalVolumeInBTCTokensSold.plus(toBigDecimal(event.params.netPrice, 18));
-    seller.averageTokenPriceInBNBSold = seller.totalVolumeInBTCTokensSold.div(seller.numberTokensSold.toBigDecimal());
+    if (seller !== null) {
+        seller.numberTokensSold = seller.numberTokensSold.plus(ONE_BI);
+        seller.numberTokensListed = seller.numberTokensListed.minus(ONE_BI);
+        seller.totalVolumeInBTCTokensSold = seller.totalVolumeInBTCTokensSold.plus(toBigDecimal(event.params.netPrice, 18));
+        seller.averageTokenPriceInBNBSold = seller.totalVolumeInBTCTokensSold.div(seller.numberTokensSold.toBigDecimal());
+        seller.save();
+    }
 
     // 3. Collection
     let collection = Collection.load(event.params.nft.toHex());
@@ -210,15 +217,18 @@ export function handleBoughtNFT(event: BoughtNFT): void {
 
     // 4. NFT
     let tokenConcatId = event.params.nft.toHex() + "-" + event.params.tokenId.toString();
-    let token = NFT.load(tokenConcatId);
+    let nft = NFT.load(tokenConcatId);
 
-    token.latestTradedPriceInBNB = toBigDecimal(event.params.price, 18);
-    token.tradeVolumeBTC = token.tradeVolumeBTC.plus(token.latestTradedPriceInBNB);
-    token.updatedAt = event.block.timestamp;
-    token.totalTrades = token.totalTrades.plus(ONE_BI);
-    token.currentAskPrice = ZERO_BD;
-    token.currentSeller = ZERO_ADDRESS;
-    token.isTradable = false;
+    if (nft != null) {
+        nft.latestTradedPriceInBNB = toBigDecimal(event.params.price, 18);
+        nft.tradeVolumeBTC = nft.tradeVolumeBTC.plus(nft.latestTradedPriceInBNB);
+        nft.updatedAt = event.block.timestamp;
+        nft.totalTrades = nft.totalTrades.plus(ONE_BI);
+        nft.currentAskPrice = ZERO_BD;
+        nft.currentSeller = ZERO_ADDRESS;
+        nft.isTradable = false;
+        nft.save();
+    }
 
     // 5. Transaction
     let transaction = new Transaction(event.transaction.hash.toHex());
@@ -228,15 +238,10 @@ export function handleBoughtNFT(event: BoughtNFT): void {
     transaction.nft = event.params.nft.toHex() + "-" + event.params.tokenId.toString();
     transaction.askPrice = toBigDecimal(event.params.price, 18);
     transaction.netPrice = toBigDecimal(event.params.netPrice, 18);
-
     transaction.buyer = event.params.buyer.toHex();
     transaction.seller = event.params.seller.toHex();
-
     transaction.save();
-    buyer.save();
-    seller.save();
-    token.save();
 
-    updateCollectionDayData(event.params.collection, toBigDecimal(event.params.askPrice, 18), event);
-    updateMarketPlaceDayData(toBigDecimal(event.params.askPrice, 18), event);
+    updateCollectionDayData(event.params.nft, toBigDecimal(event.params.price, 18), event);
+    updateMarketPlaceDayData(toBigDecimal(event.params.price, 18), event);
 }
