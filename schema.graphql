@@ -29,17 +29,14 @@ type Collection @entity {
   "List of NFTs"
   nfts: [NFT!]! @derivedFrom(field: "collection")
 
-  "Creator address"
-  creatorAddress: Bytes!
+  "Operator"
+  operator: Bytes!
 
-  "Trading fee"
-  tradingFee: BigDecimal!
+  "Royalty Recipient"
+  royaltyRecipient: Bytes!
 
-  "Creator fee"
-  creatorFee: BigDecimal!
-
-  "Whitelist checker"
-  whitelistChecker: Bytes!
+  "Royalty fee"
+  royaltyFees: BigDecimal!
 
   "Day history"
   dayData: [CollectionDayData!]! @derivedFrom(field: "collection")
@@ -73,8 +70,8 @@ type NFT @entity {
   "Latest traded price in BNB"
   latestTradedPriceInBNB: BigDecimal!
 
-  "Total volume traded (in BNB)"
-  tradeVolumeBNB: BigDecimal!
+  "Total volume traded (in BTC)"
+  tradeVolumeBTC: BigDecimal!
 
   "Number of unique trades"
   totalTrades: BigInt!
@@ -102,14 +99,14 @@ type User @entity {
   "Number of tokens sold"
   numberTokensSold: BigInt!
 
-  "Volume of tokens purchased (in BNB)"
-  totalVolumeInBNBTokensPurchased: BigDecimal!
+  "Volume of tokens purchased (in BTC)"
+  totalVolumeInBTCTokensPurchased: BigDecimal!
 
-  "Volume of tokens sold (in BNB)"
-  totalVolumeInBNBTokensSold: BigDecimal!
+  "Volume of tokens sold (in BTC)"
+  totalVolumeInBTCTokensSold: BigDecimal!
 
-  "Total fees collected (in BNB)" # For creator/treasury addresses
-  totalFeesCollectedInBNB: BigDecimal!
+  "Total fees collected (in BTC)" # For creator/treasury addresses
+  totalFeesCollectedInBTC: BigDecimal!
 
   "Transactions buy"
   buyTradeHistory: [Transaction!]! @derivedFrom(field: "buyer")
@@ -120,8 +117,8 @@ type User @entity {
   "Ask order history"
   askOrderHistory: [AskOrder!]! @derivedFrom(field: "seller")
 
-  "Average price of tokens purchased (in BNB)"
-  averageTokenPriceInBNBPurchased: BigDecimal!
+  "Average price of tokens purchased (in BTC)"
+  averageTokenPriceInBTCPurchased: BigDecimal!
 
   "Average price of tokens sold (in BNB)"
   averageTokenPriceInBNBSold: BigDecimal!
@@ -177,9 +174,6 @@ type Transaction @entity {
 
   "Seller"
   seller: User!
-
-  "Whether the buyer used BNB"
-  withBNB: Boolean!
 }
 
 type CollectionDayData @entity {

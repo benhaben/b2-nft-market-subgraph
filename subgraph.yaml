@@ -8,9 +8,9 @@ dataSources:
     name: B2NFTMarketplace
     network: b2
     source:
-      address: "0xEb817E5157211c81C725861Ca3e9Cd08c2eF0556"
+      address: "0x166A7695F71420ed492D1A8C21D45F7Af8881153"
       abi: B2NFTMarketplace
-      startBlock: 80800
+      startBlock: 83000
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -32,4 +32,37 @@ dataSources:
       eventHandlers:
         - event:  ListedNFT(indexed address,indexed uint256,address,uint256,indexed address)
           handler: handleListedNFT
-
+        - event: UnListedNFT(indexed address,indexed address,indexed uint256)
+          handler: handleUnListedNFT
+        - event: ModifyListedNFT(indexed address,indexed address,indexed uint256,uint256)
+          handler: handleModifyListedNFT
+        - event: BoughtNFT(indexed address,indexed uint256,address,uint256,uint256,address,indexed address)
+          handler: handleBoughtNFT
+  - kind: ethereum/contract
+    name: B2CollectionFactory
+    network: b2
+    source:
+      address: "0xFCB0CC17B1fC3f15c7F7464F69A8CbC2D36cB3aa"
+      abi: B2CollectionFactory
+      startBlock: 83000
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      file: ./mappings/index.ts
+      entities:
+        - Collection
+        - NFT
+        - User
+        - AskOrder
+        - Transaction
+      abis:
+        - name: B2CollectionFactory
+          file: ./abi/ugly/B2CollectionFactory.json
+      eventHandlers:
+        - event: CreatedNFTCollection(address,address,address,uint256)
+          handler: handleCollectionNew
+        - event: ModifyNFTCollection(address,address,bool)
+          handler: handleModifyCollection
+        - event:  ModifyRoyaltyFee(address,address,address,uint256)
+          handler: handleModifyRoyaltyFee
