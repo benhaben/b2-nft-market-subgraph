@@ -1,0 +1,5 @@
+[
+  "function getRoyaltyFee(address) view returns (uint256)",
+  "function getRoyaltyRecipient(address) view returns (address)",
+  "function isActive(address) view returns (bool)"
+]
