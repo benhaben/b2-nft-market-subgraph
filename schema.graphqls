@@ -20,8 +20,8 @@ type Collection @entity {
   "Total of Trades"
   totalTrades: BigInt!
 
-  "Total volume of collection traded (in BNB)"
-  totalVolumeBNB: BigDecimal!
+  "Total volume of collection traded (in BTC)"
+  totalVolumeBTC: BigDecimal!
 
   "Number tokens listed"
   numberTokensListed: BigInt!
@@ -67,8 +67,8 @@ type NFT @entity {
   "Current seller"
   currentSeller: String!
 
-  "Latest traded price in BNB"
-  latestTradedPriceInBNB: BigDecimal!
+  "Latest traded price in BTC"
+  latestTradedPriceInBTC: BigDecimal!
 
   "Total volume traded (in BTC)"
   tradeVolumeBTC: BigDecimal!
@@ -120,8 +120,8 @@ type User @entity {
   "Average price of tokens purchased (in BTC)"
   averageTokenPriceInBTCPurchased: BigDecimal!
 
-  "Average price of tokens sold (in BNB)"
-  averageTokenPriceInBNBSold: BigDecimal!
+  "Average price of tokens sold (in BTC)"
+  averageTokenPriceInBTCSold: BigDecimal!
 }
 
 type AskOrder @entity {
@@ -142,7 +142,7 @@ type AskOrder @entity {
   "Order type"
   orderType: OrderType!
 
-  "Ask Price (in BNB)"
+  "Ask Price (in BTC)"
   askPrice: BigDecimal!
 
   "Seller"
@@ -163,10 +163,10 @@ type Transaction @entity {
   "NFT"
   nft: NFT!
 
-  "Ask Price (in BNB)"
+  "Ask Price (in BTC)"
   askPrice: BigDecimal!
 
-  "Net price to seller (in BNB)"
+  "Net price to seller (in BTC)"
   netPrice: BigDecimal!
 
   "Buyer"
@@ -185,8 +185,8 @@ type CollectionDayData @entity {
   "Collection"
   collection: Collection!
 
-  "Daily volume (in BNB)"
-  dailyVolumeBNB: BigDecimal!
+  "Daily volume (in BTC)"
+  dailyVolumeBTC: BigDecimal!
 
   "Daily unique trades"
   dailyTrades: BigInt!
@@ -198,8 +198,8 @@ type MarketPlaceDayData @entity {
   "Start date (timestamp)"
   date: Int!
 
-  "Daily volume (in BNB)"
-  dailyVolumeBNB: BigDecimal!
+  "Daily volume (in BTC)"
+  dailyVolumeBTC: BigDecimal!
 
   "Daily unique trades"
   dailyTrades: BigInt!

@@ -28,7 +28,7 @@ export function handleCollectionNew(event: CreatedNFTCollection): void {
         collection.symbol = fetchSymbol(event.params.nft);
         collection.active = true;
         collection.totalTrades = ZERO_BI;
-        collection.totalVolumeBNB = ZERO_BD;
+        collection.totalVolumeBTC = ZERO_BD;
         collection.numberTokensListed = ZERO_BI;
         collection.royaltyRecipient = event.params.royaltyRecipient;
         collection.royaltyFees = toBigDecimal(event.params.royaltyFees, 2);
@@ -70,7 +70,7 @@ export function handleListedNFT(event: ListedNFT): void {
         user.totalVolumeInBTCTokensSold = ZERO_BD;
         user.totalFeesCollectedInBTC = ZERO_BD;
         user.averageTokenPriceInBTCPurchased = ZERO_BD;
-        user.averageTokenPriceInBNBSold = ZERO_BD;
+        user.averageTokenPriceInBTCSold = ZERO_BD;
         user.save();
     }
     user.numberTokensListed = user.numberTokensListed.plus(ONE_BI);
@@ -90,7 +90,7 @@ export function handleListedNFT(event: ListedNFT): void {
             nft.updatedAt = event.block.timestamp;
             nft.currentAskPrice = toBigDecimal(event.params.price, 18);
             nft.currentSeller = event.params.seller.toHex();
-            nft.latestTradedPriceInBNB = ZERO_BD;
+            nft.latestTradedPriceInBTC = ZERO_BD;
             nft.tradeVolumeBTC = ZERO_BD;
             nft.totalTrades = ZERO_BI;
             nft.isTradable = true;
@@ -183,7 +183,7 @@ export function handleBoughtNFT(event: BoughtNFT): void {
         buyer.totalVolumeInBTCTokensSold = ZERO_BD;
         buyer.totalFeesCollectedInBTC = ZERO_BD;
         buyer.averageTokenPriceInBTCPurchased = buyer.totalVolumeInBTCTokensPurchased;
-        buyer.averageTokenPriceInBNBSold = ZERO_BD;
+        buyer.averageTokenPriceInBTCSold = ZERO_BD;
     } else {
         buyer.numberTokensPurchased = buyer.numberTokensPurchased.plus(ONE_BI);
         buyer.totalVolumeInBTCTokensPurchased = buyer.totalVolumeInBTCTokensPurchased.plus(
@@ -202,7 +202,7 @@ export function handleBoughtNFT(event: BoughtNFT): void {
         seller.numberTokensSold = seller.numberTokensSold.plus(ONE_BI);
         seller.numberTokensListed = seller.numberTokensListed.minus(ONE_BI);
         seller.totalVolumeInBTCTokensSold = seller.totalVolumeInBTCTokensSold.plus(toBigDecimal(event.params.netPrice, 18));
-        seller.averageTokenPriceInBNBSold = seller.totalVolumeInBTCTokensSold.div(seller.numberTokensSold.toBigDecimal());
+        seller.averageTokenPriceInBTCSold = seller.totalVolumeInBTCTokensSold.div(seller.numberTokensSold.toBigDecimal());
         seller.save();
     }
 
@@ -210,7 +210,7 @@ export function handleBoughtNFT(event: BoughtNFT): void {
     let collection = Collection.load(event.params.nft.toHex());
     if (collection !== null) {
         collection.totalTrades = collection.totalTrades.plus(ONE_BI);
-        collection.totalVolumeBNB = collection.totalVolumeBNB.plus(toBigDecimal(event.params.price, 18));
+        collection.totalVolumeBTC = collection.totalVolumeBTC.plus(toBigDecimal(event.params.price, 18));
         collection.numberTokensListed = collection.numberTokensListed.minus(ONE_BI);
         collection.save();
     }
@@ -220,8 +220,8 @@ export function handleBoughtNFT(event: BoughtNFT): void {
     let nft = NFT.load(tokenConcatId);
 
     if (nft != null) {
-        nft.latestTradedPriceInBNB = toBigDecimal(event.params.price, 18);
-        nft.tradeVolumeBTC = nft.tradeVolumeBTC.plus(nft.latestTradedPriceInBNB);
+        nft.latestTradedPriceInBTC = toBigDecimal(event.params.price, 18);
+        nft.tradeVolumeBTC = nft.tradeVolumeBTC.plus(nft.latestTradedPriceInBTC);
         nft.updatedAt = event.block.timestamp;
         nft.totalTrades = nft.totalTrades.plus(ONE_BI);
         nft.currentAskPrice = ZERO_BD;
