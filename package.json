@@ -5,11 +5,14 @@
   "license": "MIT",
   "scripts": {
     "create": "graph create example --node https://api.thegraph.com/deploy/",
-    "create-local": "graph create example --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy example --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy example --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020"
+    "create-local": "graph create example --node http://127.0.0.1:8020",
+    "deploy-local": "graph deploy example --ipfs http://127.0.0.1:5001 --node http://127.0.0.1:8020",
+    "create-demo": "graph create b2-nft-market --node http://8.130.122.217:9020",
+    "deploy-demo": "graph deploy b2-nft-market --ipfs http://8.130.122.217:5001 --node http://8.130.122.217:9020",
+    "demo-web": "http://8.130.122.217:9000/subgraphs/id/QmUALjWdnAgyXhYBtKajG3XqPXXjsTEKVaGrJGcVnGmkF9/graphql"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.67.1",
